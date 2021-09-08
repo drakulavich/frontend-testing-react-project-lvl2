@@ -12,4 +12,7 @@ test-coverage:
 lint:
 	npx eslint .
 
+start:
+	npx @hexlet/react-todo-app-with-backend
+
 .PHONY: test
