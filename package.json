@@ -1,0 +1,29 @@
+{
+  "name": "@hexlet/code",
+  "version": "1.0.0",
+  "description": "todo app e2e testing",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx jest --bail --passWithNoTests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drakulavich/frontend-testing-react-project-lvl2.git"
+  },
+  "author": "Anton Yakutovich",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/drakulavich/frontend-testing-react-project-lvl2/issues"
+  },
+  "homepage": "https://github.com/drakulavich/frontend-testing-react-project-lvl2#readme",
+  "dependencies": {
+    "@hexlet/react-todo-app-with-backend": "^0.10.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-jest": "^24.4.0",
+    "jest": "^27.1.1"
+  }
+}
