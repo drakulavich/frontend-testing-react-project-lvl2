@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 // @ts-check
 
 import '@testing-library/jest-dom';
@@ -11,6 +12,6 @@ import TodoApp from '@hexlet/react-todo-app-with-backend';
 it('should render list on the page', async () => {
   render(<TodoApp />);
 
-  await waitFor(() => screen.getByRole('list'));
+  expect(screen.queryByRole('list')).toBeInTheDocument();
   // screen.debug();
 });

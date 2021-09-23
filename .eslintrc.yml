@@ -3,6 +3,10 @@
 plugins:
   # https://github.com/jest-community/eslint-plugin-jest
   - jest
+  # https://github.com/testing-library/eslint-plugin-testing-library
+  - testing-library
+  # https://github.com/testing-library/eslint-plugin-jest-dom
+  - jest-dom
 
 # https://eslint.org/docs/user-guide/configuring#specifying-environments
 env:
@@ -11,11 +15,15 @@ env:
 
 extends:
   - 'airbnb-base'
+  - 'plugin:testing-library/react'
   - 'plugin:jest/recommended'
+  - 'plugin:jest-dom/recommended'
 
 parserOptions:
   ecmaVersion: 11
   sourceType: module
+  ecmaFeatures:
+    jsx: true
 
 rules:
   no-console: 0
