@@ -65,4 +65,13 @@ export const handlers = [
       ctx.json(list),
     );
   }),
+
+  rest.delete('/api/v1/lists/:listId', (req, res, ctx) => {
+    const { listId } = req.params;
+
+    sessionStorage.removeItem(listId);
+    return res(
+      ctx.status(204),
+    );
+  }),
 ];

@@ -6,6 +6,9 @@ install-deps:
 test:
 	npm test
 
+watch:
+	npm run watch
+
 test-coverage:
 	npm test -- --coverage --coverageProvider=v8
 

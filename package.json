@@ -4,7 +4,8 @@
   "description": "todo app e2e testing",
   "main": "index.js",
   "scripts": {
-    "test": "npx jest --bail"
+    "test": "npx jest --bail",
+    "watch": "npx jest --watch"
   },
   "repository": {
     "type": "git",
