@@ -18,6 +18,7 @@
   "homepage": "https://github.com/drakulavich/frontend-testing-react-project-lvl2#readme",
   "dependencies": {
     "@hexlet/react-todo-app-with-backend": "^0.10.0",
+    "lodash": "^4.17.21",
     "react": "^17.0.2"
   },
   "devDependencies": {
@@ -33,6 +34,7 @@
     "eslint-plugin-jest": "^24.4.0",
     "eslint-plugin-jest-dom": "^3.9.2",
     "eslint-plugin-testing-library": "^4.12.3",
-    "jest": "^27.1.1"
+    "jest": "^27.1.1",
+    "msw": "^0.35.0"
   }
 }
