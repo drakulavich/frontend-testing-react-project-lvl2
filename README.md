@@ -4,7 +4,7 @@
 
 ## Asciinemas
 
-* Первый шаг: https://asciinema.org/a/Q8ac9a1muEbohxUEt9N01tR5N
-* Второй шаг: https://asciinema.org/a/WlqNK71KZVKs5CPL2UJyZboX0
-* Третий шаг: https://asciinema.org/a/jcTxwPhS1HqdABEnmeSTYvlgy
-* Четвёртый шаг: https://asciinema.org/a/ZdBbE0AEpHBDkP3iH7otRxjqm
+* [Первый шаг](https://asciinema.org/a/Q8ac9a1muEbohxUEt9N01tR5N)
+* [Второй шаг](https://asciinema.org/a/WlqNK71KZVKs5CPL2UJyZboX0)
+* [Третий шаг](https://asciinema.org/a/jcTxwPhS1HqdABEnmeSTYvlgy)
+* [Четвёртый шаг](https://asciinema.org/a/ZdBbE0AEpHBDkP3iH7otRxjqm)
