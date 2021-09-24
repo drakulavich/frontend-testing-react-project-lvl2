@@ -138,4 +138,8 @@ it('should delete list', async () => {
     expect(screen.queryByText(listName)).not.toBeInTheDocument();
     expect(screen.queryByText(taskTwo)).not.toBeInTheDocument();
   });
+
+  // Create the list again and check tasks
+  await addList(listName);
+  expect((screen.queryByText('Tasks list is empty'))).toBeInTheDocument();
 });
