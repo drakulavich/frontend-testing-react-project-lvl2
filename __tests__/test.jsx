@@ -18,6 +18,9 @@ import { server } from '../__mocks__/server';
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
+beforeEach(() => {
+  render(<TodoApp />);
+});
 
 const addList = async (listName) => {
   const newListInput = screen.getByLabelText('New list');
@@ -25,7 +28,9 @@ const addList = async (listName) => {
   userEvent.type(newListInput, listName);
   userEvent.click(screen.getByRole('button', { name: /add list/i }));
 
-  await screen.findByRole('button', { name: listName });
+  expect(newListInput).toHaveAttribute('readonly');
+  expect(await screen.findByRole('button', { name: listName })).toBeInTheDocument();
+  expect(newListInput).not.toHaveAttribute('readonly');
 };
 
 const addTask = async (taskText) => {
@@ -34,112 +39,119 @@ const addTask = async (taskText) => {
   userEvent.type(newTaskInput, taskText);
   userEvent.click(screen.getByRole('button', { name: 'Add' }));
 
-  await screen.findByRole('checkbox', { name: taskText });
+  expect(newTaskInput).toHaveAttribute('readonly');
+  expect(await screen.findByRole('checkbox', { name: taskText })).toBeInTheDocument();
+  expect(newTaskInput).not.toHaveAttribute('readonly');
 };
 
-beforeEach(async () => {
-  render(<TodoApp />);
+describe('tasks', () => {
+  it('can be added to the different lists', async () => {
+    const taskName = 'task uno';
+    const listName = 'dos list';
 
-  await addList('primary list');
-});
+    await addList('primary list');
+    await addTask(taskName);
+    await addList(listName);
+    userEvent.click(screen.getByRole('button', { name: listName }));
 
-it('should add tasks to the different lists', async () => {
-  const taskName = 'task uno';
-  const listName = 'dos list';
-
-  await addTask(taskName);
-
-  await addList(listName);
-  userEvent.click(screen.getByRole('button', { name: listName }));
-  await waitFor(() => {
-    expect(screen.queryByText(taskName)).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByText(taskName)).not.toBeInTheDocument();
+    });
   });
 
-  await addTask('task two');
-});
+  it('can not be duplicated', async () => {
+    const taskName = 'repeat task';
+    await addList('primary list');
+    await addTask(taskName);
+    await addTask(taskName);
 
-it('should not add the same task twice', async () => {
-  const taskName = 'repeat task';
-
-  await addTask(taskName);
-  await addTask(taskName);
-
-  expect(screen.queryByText(`${taskName} already exists`)).toBeInTheDocument();
-
-  const taskItems = [...within(screen.getByTestId('tasks')).getAllByRole('listitem')];
-  expect(taskItems).toHaveLength(1);
-});
-
-it('should not add the same list twice', async () => {
-  const listName = 'primary list';
-  await addList(listName);
-
-  expect(screen.queryByText(`${listName} already exists`)).toBeInTheDocument();
-
-  const listItems = [...within(screen.getByTestId('lists')).getAllByRole('listitem')];
-  expect(listItems).toHaveLength(1);
-});
-
-it('should not add empty task', async () => {
-  userEvent.click(screen.getByRole('button', { name: 'Add' }));
-
-  expect(await screen.findByText('Required!')).toBeInTheDocument();
-});
-
-it('should not add empty list', async () => {
-  userEvent.click(screen.getByRole('button', { name: /add list/i }));
-
-  expect(await screen.findByText('Required!')).toBeInTheDocument();
-});
-
-it('should create tasks, finish them and remove', async () => {
-  // Add tasks
-  const taskNames = ['first', 'second, third'];
-  for (const task of taskNames) {
-    await addTask(task);
-  }
-
-  // Change task state
-  const taskToClick = taskNames[1];
-  const checkBox = await screen.findByRole('checkbox', { name: taskToClick });
-  userEvent.click(checkBox);
-  await waitFor(() => {
-    expect(screen.queryByRole('checkbox', { name: taskToClick })).toBeChecked();
+    expect(screen.queryByText(`${taskName} already exists`)).toBeInTheDocument();
+    const tasksContainer = screen.getByTestId('tasks');
+    const taskItems = [...within(tasksContainer).getAllByRole('listitem')];
+    expect(taskItems).toHaveLength(1);
   });
 
-  // Remove task
-  const taskItems = [...within(screen.getByTestId('tasks')).getAllByRole('listitem')];
-  const taskItemToRemove = taskItems.find((item) => within(item).queryByText(taskToClick));
-  userEvent.click(within(taskItemToRemove).getByRole('button', { name: 'Remove' }));
-  await waitFor(() => {
-    expect(screen.queryByText(taskToClick)).not.toBeInTheDocument();
+  it('can not be empty', async () => {
+    userEvent.click(screen.getByRole('button', { name: 'Add' }));
+
+    expect(await screen.findByText('Required!')).toBeInTheDocument();
+  });
+
+  it('can be created, finished and removed', async () => {
+    const taskNames = ['first', 'second, third'];
+    await addList('primary list');
+
+    // Add tasks
+    for (const task of taskNames) {
+      await addTask(task);
+    }
+
+    // Change task state
+    const taskToClick = taskNames[1];
+    const checkBox = screen.getByRole('checkbox', { name: taskToClick });
+    userEvent.click(checkBox);
+    await waitFor(() => {
+      expect(checkBox).toBeChecked();
+    });
+
+    // Remove task
+    const tasksContainer = screen.getByTestId('tasks');
+    const taskItems = [...within(tasksContainer).getAllByRole('listitem')];
+    const taskItemToRemove = taskItems.find((item) => within(item).queryByText(taskToClick));
+    userEvent.click(within(taskItemToRemove).getByRole('button', { name: 'Remove' }));
+    await waitFor(() => {
+      expect(taskItemToRemove).not.toBeInTheDocument();
+    });
   });
 });
 
-it('should delete list', async () => {
-  const taskOne = 'task one';
-  const taskTwo = 'task two';
-  const listName = 'secondary list';
+describe('lists', () => {
+  it('can not be duplicated', async () => {
+    const listName = 'primary list';
+    await addList(listName);
+    await addList(listName);
 
-  await addTask(taskOne);
-  await addList(listName);
-  userEvent.click(screen.getByRole('button', { name: listName }));
-  await waitFor(() => {
-    expect(screen.queryByText(taskOne)).not.toBeInTheDocument();
+    expect(screen.queryByText(`${listName} already exists`)).toBeInTheDocument();
+
+    const listsContainer = screen.getByTestId('lists');
+    const listItems = [...within(listsContainer).getAllByRole('listitem')];
+    expect(listItems).toHaveLength(1);
   });
 
-  await addTask(taskTwo);
+  it('can not be empty', async () => {
+    userEvent.click(screen.getByRole('button', { name: /add list/i }));
 
-  // Remove list
-  const listItems = [...within(screen.getByTestId('lists')).getAllByRole('listitem')];
-  const listItemToRemove = listItems.find((item) => within(item).queryByText(listName));
-  userEvent.click(within(listItemToRemove).getByRole('button', { name: 'remove list' }));
-  await waitFor(() => {
-    expect(screen.queryByText(listName)).not.toBeInTheDocument();
-    expect(screen.queryByText(taskTwo)).not.toBeInTheDocument();
+    expect(await screen.findByText('Required!')).toBeInTheDocument();
   });
 
-  // Create the list again and check tasks
-  await addList(listName);
-  expect((screen.queryByText('Tasks list is empty'))).toBeInTheDocument();
+  it('can be deleted', async () => {
+    const taskOne = 'task one';
+    const taskTwo = 'task two';
+    const listName = 'secondary list';
+
+    // Add one task for each list
+    await addList('primary list');
+    await addTask(taskOne);
+    await addList(listName);
+    userEvent.click(screen.getByRole('button', { name: listName }));
+    await waitFor(() => {
+      expect(screen.queryByText(taskOne)).not.toBeInTheDocument();
+    });
+
+    await addTask(taskTwo);
+
+    // Remove list
+    const listsContainer = screen.getByTestId('lists');
+    const listItems = [...within(listsContainer).getAllByRole('listitem')];
+    const listItemToRemove = listItems.find((item) => within(item).queryByText(listName));
+    userEvent.click(within(listItemToRemove).getByRole('button', { name: 'remove list' }));
+    await waitFor(() => {
+      expect(screen.queryByText(listName)).not.toBeInTheDocument();
+      expect(screen.queryByText(taskTwo)).not.toBeInTheDocument();
+    });
+
+    // Create the list again and check tasks
+    await addList(listName);
+    expect((screen.queryByText('Tasks list is empty'))).toBeInTheDocument();
+  });
 });
