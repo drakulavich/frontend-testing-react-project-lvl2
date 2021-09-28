@@ -1,3 +1,4 @@
+/* eslint-disable testing-library/no-node-access */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-unused-vars */
@@ -95,10 +96,8 @@ describe('tasks', () => {
     });
 
     // Remove task
-    const tasksContainer = screen.getByTestId('tasks');
-    const taskItems = [...within(tasksContainer).getAllByRole('listitem')];
-    const taskItemToRemove = taskItems.find((item) => within(item).queryByText(taskToClick));
-    userEvent.click(within(taskItemToRemove).getByRole('button', { name: 'Remove' }));
+    const taskItemToRemove = within(screen.getByTestId('tasks')).getByText(taskToClick).closest('li');
+    userEvent.click(within(taskItemToRemove).getByRole('button'));
     await waitFor(() => {
       expect(taskItemToRemove).not.toBeInTheDocument();
     });
@@ -141,10 +140,8 @@ describe('lists', () => {
     await addTask(taskTwo);
 
     // Remove list
-    const listsContainer = screen.getByTestId('lists');
-    const listItems = [...within(listsContainer).getAllByRole('listitem')];
-    const listItemToRemove = listItems.find((item) => within(item).queryByText(listName));
-    userEvent.click(within(listItemToRemove).getByRole('button', { name: 'remove list' }));
+    const listItem = within(screen.getByTestId('lists')).getByText(listName).closest('div');
+    userEvent.click(within(listItem).getByRole('button', { name: /remove list/i }));
     await waitFor(() => {
       expect(screen.queryByText(listName)).not.toBeInTheDocument();
       expect(screen.queryByText(taskTwo)).not.toBeInTheDocument();
